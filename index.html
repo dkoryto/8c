@@ -6,6 +6,7 @@
 <title>8c — Studio kreatywno-techniczne. Design, IT i strony no-code.</title>
 <meta name="description" content="8c łączy projektowanie graficzne, usługi IT i strony no-code w jednym studiu. Precyzja inżyniera, oddech premium. Jeden zespół, od pomysłu do wdrożenia." />
 <meta name="theme-color" content="#0B0E14" />
+<script>try{if(localStorage.getItem('8c-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 
 <!-- Open Graph -->
 <meta property="og:title" content="8c — Studio kreatywno-techniczne" />
@@ -20,6 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
 <style>
+
 
 :root{
   /* baza — atramentowe granaty z chłodnym podtonem, nie czysta czerń */
@@ -61,6 +63,7 @@ body{
   font-size:17px;
   line-height:1.6;
   overflow-x:hidden;
+  transition: background .45s var(--ease), color .45s var(--ease);
 }
 
 ::selection{ background:var(--amber); color:var(--ink-900); }
@@ -118,6 +121,18 @@ nav.scrolled{ border-bottom-color:var(--line); }
 .btn .arr{ transition:transform .3s var(--ease-soft); }
 .btn:hover .arr{ transform:translateX(3px); }
 
+.nav-right{ display:flex; align-items:center; gap:10px; }
+.theme-toggle{
+  width:40px; height:40px; border-radius:11px; border:1px solid var(--line);
+  background:rgba(255,255,255,.012); color:var(--fg-dim); cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+  transition: color .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease), transform .25s var(--ease-soft);
+}
+.theme-toggle:hover{ color:var(--amber); border-color:#33405A; transform:translateY(-1px) rotate(-8deg); }
+.theme-toggle svg{ width:19px; height:19px; }
+.theme-toggle .sun{ display:none; }
+.theme-toggle .moon{ display:block; }
+
 /* ---------- HERO ---------- */
 header.hero{ position:relative; padding: 96px 0 70px; }
 .eyebrow{
@@ -163,14 +178,70 @@ section{ position:relative; z-index:2; }
 .sec-head h2{ font-size:clamp(30px,4.4vw,50px); margin-top:14px; max-width:18ch; }
 .sec-lead{ color:var(--fg-dim); max-width:40ch; font-size:16.5px; }
 
-/* manifest strip */
-.manifest{ padding: 30px 0 14px; }
-.manifest p{
-  font-family:"Space Grotesk"; font-weight:400; font-size:clamp(22px,3vw,34px);
-  line-height:1.4; letter-spacing:-.01em; color:var(--fg); max-width:24ch; margin:0;
+/* manifest — układ dwukolumnowy: statement + żywy diagram przepływu */
+.manifest{ padding: 56px 0 24px; }
+.manifest-grid{
+  display:grid; grid-template-columns: 1fr 0.92fr; gap: 56px; align-items:center;
 }
-.manifest p em{ color:var(--fg-faint); font-style:normal; }
-.manifest p span{ color:var(--amber); font-style:normal; }
+.manifest-statement{
+  font-family:"Space Grotesk"; font-weight:400; font-size:clamp(22px,2.9vw,33px);
+  line-height:1.42; letter-spacing:-.01em; color:var(--fg); max-width:22ch; margin:18px 0 0;
+}
+.manifest-statement em{ color:var(--fg-faint); font-style:normal; }
+.manifest-statement span{ color:var(--amber); font-style:normal; }
+
+/* diagram przepływu */
+.flow-box{
+  position:relative; border:1px solid var(--line); border-radius:18px;
+  background: linear-gradient(165deg, var(--ink-700), var(--ink-800));
+  padding:18px; overflow:hidden;
+}
+.flow-box::before{
+  content:""; position:absolute; inset:0;
+  background-image: linear-gradient(var(--line-soft) 1px, transparent 1px), linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size:30px 30px; mask-image: radial-gradient(80% 80% at 50% 50%, #000, transparent 80%); opacity:.45;
+}
+.flow-box svg{ display:block; width:100%; height:auto; position:relative; }
+.flow-box .label{
+  position:absolute; top:14px; left:16px; font-family:"JetBrains Mono"; font-size:11px;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--fg-faint);
+}
+.flow-box .status{
+  position:absolute; top:14px; right:16px; font-family:"JetBrains Mono"; font-size:11px;
+  letter-spacing:.08em; color:var(--cyan); display:flex; align-items:center; gap:7px;
+}
+.flow-box .status i{ width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 9px var(--cyan); animation:pulse 1.8s var(--ease) infinite; font-style:normal; }
+
+.wire{ stroke-dasharray:4 9; animation:flowdash 1.1s linear infinite; }
+.wire.d2{ animation-duration:1.5s; }
+.wire.d3{ animation-duration:.9s; }
+@keyframes flowdash{ to{ stroke-dashoffset:-13; } }
+.core-glow{ transform-origin:center; animation:coreGlow 2.6s var(--ease) infinite; }
+@keyframes coreGlow{ 0%,100%{ opacity:.25; } 50%{ opacity:.65; } }
+.node-pop{ animation:nodePop 3s var(--ease) infinite; }
+.node-pop.n2{ animation-delay:.6s; } .node-pop.n3{ animation-delay:1.2s; }
+.node-pop.n4{ animation-delay:.9s; } .node-pop.n5{ animation-delay:1.6s; }
+@keyframes nodePop{ 0%,88%,100%{ fill:#141B27; } 12%,40%{ fill:#1E2A3A; } }
+
+/* pasek integracji — nieskończony scroll */
+.marquee{
+  margin-top:60px; overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  padding:20px 0; position:relative;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-label{ font-family:"JetBrains Mono"; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:18px; }
+.marquee-track{ display:flex; gap:46px; width:max-content; animation:scrollx 30s linear infinite; }
+.marquee:hover .marquee-track{ animation-play-state:paused; }
+.marquee-item{ display:flex; align-items:center; gap:11px; white-space:nowrap; font-family:"Space Grotesk"; font-weight:500; font-size:17px; color:var(--fg-dim); transition:color .25s var(--ease); }
+.marquee-item:hover{ color:var(--fg); }
+.marquee-item .d{ width:7px; height:7px; border-radius:2px; background:var(--amber); opacity:.55; transform:rotate(45deg); }
+@keyframes scrollx{ to{ transform:translateX(-50%); } }
+
+@media (max-width: 880px){
+  .manifest-grid{ grid-template-columns:1fr; gap:36px; }
+  .manifest-statement{ max-width:34ch; }
+}
 
 /* ---------- SERVICES BENTO ---------- */
 .services{ padding: 92px 0 40px; }
@@ -265,6 +336,57 @@ footer{ border-top:1px solid var(--line); padding: 40px 0 56px; position:relativ
 .reveal{ opacity:0; transform:translateY(22px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
 .reveal.in{ opacity:1; transform:none; }
 
+/* ============================================================
+   JASNY MOTYW — chłodne biele, ten sam bursztynowy akcent
+   ============================================================ */
+[data-theme="light"]{
+  --ink-900:#EDF1F7;
+  --ink-800:#FFFFFF;
+  --ink-700:#F7F9FC;
+  --ink-600:#EAEFF6;
+  --line:#DDE3EC;
+  --line-soft:#E7ECF3;
+  --fg:#161B22;
+  --fg-dim:#4B5A72;
+  --fg-faint:#8793A5;
+  --amber:#E89A1E;
+  --amber-soft:#E89A1E26;
+  --amber-deep:#A8690A;
+  --cyan:#0FA593;
+}
+[data-theme="light"] body{
+  background:
+    radial-gradient(1200px 700px at 78% -8%, #FFFFFF 0%, transparent 60%),
+    radial-gradient(900px 560px at 8% 12%, #E7F0F6 0%, transparent 55%),
+    var(--ink-900);
+}
+[data-theme="light"] ::selection{ background:var(--amber); color:#221606; }
+[data-theme="light"] nav{ background:linear-gradient(180deg, rgba(237,241,247,.9), rgba(237,241,247,.55)); }
+[data-theme="light"] .theme-toggle{ background:rgba(15,20,30,.02); }
+[data-theme="light"] .theme-toggle:hover{ border-color:#C3CCDA; }
+[data-theme="light"] .theme-toggle .moon{ display:none; }
+[data-theme="light"] .theme-toggle .sun{ display:block; }
+[data-theme="light"] .btn-ghost{ background:rgba(15,20,30,.02); }
+[data-theme="light"] .btn-ghost:hover{ background:rgba(15,20,30,.05); border-color:#C3CCDA; }
+/* nagłówek hero: start od ciemnego atramentu zamiast bieli */
+[data-theme="light"] .hero h1 .grad{
+  background:linear-gradient(102deg, var(--fg) 6%, var(--amber-deep) 58%, #8A5408 96%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+/* akcentowe etykiety: głębszy bursztyn dla kontrastu na bieli */
+[data-theme="light"] .sec-tag,
+[data-theme="light"] .manifest-statement span,
+[data-theme="light"] .cta-mail b{ color:var(--amber-deep); }
+[data-theme="light"] .card.feature{ background:linear-gradient(165deg, #EFF5FB, #FFFFFF); border-color:#D6DEEA; }
+[data-theme="light"] .cta-box{ background:radial-gradient(120% 160% at 0% 0%, #E9F2F8 0%, #FFFFFF 55%); border-color:#D6DEEA; }
+/* diagram zostaje ciemnym panelem — jak edytor kodu na jasnej stronie */
+[data-theme="light"] .flow-box{ background:linear-gradient(165deg, #141B27, #0F141D); border-color:#D6DEEA; }
+[data-theme="light"] .flow-box::before{
+  background-image:linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+}
+[data-theme="light"] .flow-box .label{ color:#5E6B7E; }
+[data-theme="light"] .flow-box text{ fill:#9AA6B8; }
+
 @media (prefers-reduced-motion: reduce){
   *{ animation:none !important; transition:none !important; }
   .reveal{ opacity:1; transform:none; }
@@ -300,10 +422,16 @@ footer{ border-top:1px solid var(--line); padding: 40px 0 56px; position:relativ
       <a href="#manifest">Studio</a>
       <a href="#kontakt">Kontakt</a>
     </div>
-    <a href="#kontakt" class="btn btn-primary" data-magnetic>
-      Porozmawiajmy
-      <svg class="arr" width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </a>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Przełącz motyw jasny/ciemny" title="Przełącz motyw">
+        <svg class="moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <a href="#kontakt" class="btn btn-primary" data-magnetic>
+        Porozmawiajmy
+        <svg class="arr" width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
   </div>
 </nav>
 
@@ -329,13 +457,13 @@ footer{ border-top:1px solid var(--line); padding: 40px 0 56px; position:relativ
     <span class="eyebrow reveal"><span class="dot"></span> Studio kreatywno-techniczne · od 2014</span>
 
     <h1 class="reveal">
-      <span class="word">Design,</span> <span class="word">kod</span> <span class="word">i</span> <span class="word">infrastruktura</span><br>
+      <span class="word">Automatyzacja,</span> <span class="word">kod</span> <span class="word">i</span> <span class="word">infrastruktura</span><br>
       <span class="grad">w jednym zespole.</span>
     </h1>
 
     <p class="hero-sub reveal">
-      Nie żonglujesz pięcioma podwykonawcami. 8c łączy projektowanie graficzne,
-      usługi IT i strony no-code pod jednym dachem — od pierwszego szkicu po działające
+      Nie żonglujesz pięcioma podwykonawcami. 8c łączy automatyzację n8n i agentów AI,
+      usługi IT i strony no-code pod jednym dachem — od pierwszego workflow po działające
       wdrożenie. Precyzja inżyniera, oddech studia premium.
     </p>
 
@@ -349,18 +477,93 @@ footer{ border-top:1px solid var(--line); padding: 40px 0 56px; position:relativ
 
     <div class="hero-meta reveal">
       <div class="item"><div class="n"><b>10</b>+ lat</div><div class="l">na rynku</div></div>
-      <div class="item"><div class="n"><b>3</b> filary</div><div class="l">design · IT · no-code</div></div>
+      <div class="item"><div class="n"><b>3</b> filary</div><div class="l">AI · IT · no-code</div></div>
       <div class="item"><div class="n"><b>1</b> zespół</div><div class="l">pełna odpowiedzialność</div></div>
     </div>
   </div>
 </header>
 
 <!-- ===================== MANIFEST ===================== -->
-<section id="manifest" class="wrap manifest">
-  <p class="reveal">
-    Wierzymy, że dobra marka i działająca technologia to <span>jedna decyzja</span>, nie dwie.
-    <em>Dlatego projektujemy i wdrażamy w tym samym pokoju.</em>
-  </p>
+<section id="manifest" class="manifest">
+  <div class="wrap manifest-grid">
+    <div class="reveal">
+      <div class="sec-tag">// Studio</div>
+      <p class="manifest-statement">
+        Wierzymy, że dobra marka i działająca technologia to <span>jedna decyzja</span>, nie dwie.
+        <em>Dlatego projektujemy i wdrażamy w tym samym pokoju.</em>
+      </p>
+    </div>
+
+    <!-- żywy diagram przepływu automatyzacji -->
+    <div class="flow-box reveal" aria-hidden="true">
+      <span class="label">// flow.n8n</span>
+      <span class="status"><i></i> live</span>
+      <svg viewBox="0 0 380 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- wiry: wejścia -> rdzeń -->
+        <path class="wire"    d="M70 64 C120 64 130 120 180 120"  stroke="#5BD7C4" stroke-width="2"/>
+        <path class="wire d2" d="M70 130 H180"                    stroke="#5BD7C4" stroke-width="2"/>
+        <path class="wire d3" d="M70 196 C120 196 130 140 180 140" stroke="#5BD7C4" stroke-width="2"/>
+        <!-- wiry: rdzeń -> wyjścia -->
+        <path class="wire d2" d="M242 110 C290 110 300 78 330 78"   stroke="#F5B544" stroke-width="2"/>
+        <path class="wire"    d="M242 150 C290 150 300 182 330 182"  stroke="#F5B544" stroke-width="2"/>
+
+        <!-- węzły wejściowe -->
+        <rect class="node-pop"    x="28" y="50"  width="42" height="28" rx="7" stroke="#2A3548" stroke-width="1.5"/>
+        <rect class="node-pop n2" x="28" y="116" width="42" height="28" rx="7" stroke="#2A3548" stroke-width="1.5"/>
+        <rect class="node-pop n3" x="28" y="182" width="42" height="28" rx="7" stroke="#2A3548" stroke-width="1.5"/>
+        <circle cx="49" cy="64"  r="3.5" fill="#5BD7C4"/>
+        <circle cx="49" cy="130" r="3.5" fill="#5BD7C4"/>
+        <circle cx="49" cy="196" r="3.5" fill="#5BD7C4"/>
+
+        <!-- rdzeń: agent AI -->
+        <circle class="core-glow" cx="211" cy="130" r="44" fill="#F5B544"/>
+        <rect x="182" y="101" width="58" height="58" rx="16" fill="#11161F" stroke="#F5B544" stroke-width="2"/>
+        <path d="M211 116v28M197 130h28" stroke="#F5B544" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="211" cy="130" r="4.5" fill="#E8ECF2"/>
+        <text x="211" y="180" text-anchor="middle" fill="#9AA6B8" font-family="JetBrains Mono" font-size="11" letter-spacing="1">AGENT&#160;AI</text>
+
+        <!-- węzły wyjściowe -->
+        <rect class="node-pop n4" x="330" y="64"  width="42" height="28" rx="7" stroke="#3A2E14" stroke-width="1.5"/>
+        <rect class="node-pop n5" x="330" y="168" width="42" height="28" rx="7" stroke="#3A2E14" stroke-width="1.5"/>
+        <path d="M344 78l4 4 6-7" stroke="#F5B544" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M344 182l4 4 6-7" stroke="#F5B544" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- pasek integracji -->
+  <div class="wrap reveal">
+    <div class="marquee-label">// spinamy narzędzia, których już używasz</div>
+  </div>
+  <div class="marquee reveal">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="d"></span>n8n</span>
+      <span class="marquee-item"><span class="d"></span>OpenAI</span>
+      <span class="marquee-item"><span class="d"></span>Slack</span>
+      <span class="marquee-item"><span class="d"></span>Gmail</span>
+      <span class="marquee-item"><span class="d"></span>Notion</span>
+      <span class="marquee-item"><span class="d"></span>Google Sheets</span>
+      <span class="marquee-item"><span class="d"></span>HubSpot</span>
+      <span class="marquee-item"><span class="d"></span>Airtable</span>
+      <span class="marquee-item"><span class="d"></span>Stripe</span>
+      <span class="marquee-item"><span class="d"></span>Telegram</span>
+      <span class="marquee-item"><span class="d"></span>Webhooks</span>
+      <span class="marquee-item"><span class="d"></span>PostgreSQL</span>
+      <!-- duplikat dla płynnej pętli -->
+      <span class="marquee-item"><span class="d"></span>n8n</span>
+      <span class="marquee-item"><span class="d"></span>OpenAI</span>
+      <span class="marquee-item"><span class="d"></span>Slack</span>
+      <span class="marquee-item"><span class="d"></span>Gmail</span>
+      <span class="marquee-item"><span class="d"></span>Notion</span>
+      <span class="marquee-item"><span class="d"></span>Google Sheets</span>
+      <span class="marquee-item"><span class="d"></span>HubSpot</span>
+      <span class="marquee-item"><span class="d"></span>Airtable</span>
+      <span class="marquee-item"><span class="d"></span>Stripe</span>
+      <span class="marquee-item"><span class="d"></span>Telegram</span>
+      <span class="marquee-item"><span class="d"></span>Webhooks</span>
+      <span class="marquee-item"><span class="d"></span>PostgreSQL</span>
+    </div>
+  </div>
 </section>
 
 <!-- ===================== USŁUGI / BENTO ===================== -->
@@ -379,15 +582,17 @@ footer{ border-top:1px solid var(--line); padding: 40px 0 56px; position:relativ
       <span class="accent-line"></span>
       <span class="num mono">01</span>
       <svg class="ico" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-        <rect x="6" y="9" width="36" height="26" rx="3" stroke="#F5B544" stroke-width="2"/>
-        <path d="M6 27l9-8 7 6 8-9 12 11" stroke="#5BD7C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="16" cy="17" r="3" fill="#E8ECF2"/>
-        <path d="M16 39h16" stroke="#E8ECF2" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="9" cy="13" r="3.5" stroke="#5BD7C4" stroke-width="2"/>
+        <circle cx="9" cy="35" r="3.5" stroke="#5BD7C4" stroke-width="2"/>
+        <rect x="20" y="17" width="14" height="14" rx="4" stroke="#F5B544" stroke-width="2"/>
+        <circle cx="42" cy="24" r="3.5" stroke="#E8ECF2" stroke-width="2"/>
+        <path d="M12.5 13H17a3 3 0 0 1 3 3M12.5 35H17a3 3 0 0 0 3-3M34 24h4.5" stroke="#9AA6B8" stroke-width="2" stroke-linecap="round"/>
+        <path d="M27 21v6M24 24h6" stroke="#F5B544" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      <h3>Graphic Design &amp; Social Media</h3>
-      <p>Identyfikacja wizualna, materiały do kampanii i prowadzenie social mediów. Spójny język marki, który wygląda dobrze w każdym formacie — od wizytówki po reel.</p>
+      <h3>Automatyzacja n8n &amp; Agenci AI</h3>
+      <p>Spinamy Twoje narzędzia w jeden, działający bez przerwy proces — workflowy n8n i agenci AI przejmują powtarzalną, ręczną robotę. Mniej klikania, mniej błędów, więcej czasu na to, co faktycznie się liczy.</p>
       <div class="tags">
-        <span>Branding</span><span>Key visual</span><span>Social</span><span>DTP</span>
+        <span>n8n</span><span>Agenci AI</span><span>Integracje API</span><span>Workflow</span>
       </div>
     </article>
 
@@ -516,6 +721,19 @@ footer{ border-top:1px solid var(--line); padding: 40px 0 56px; position:relativ
   var nav = document.getElementById('nav');
   var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 12); };
   window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* --- przełącznik motywu (z zapisem) --- */
+  var tgl = document.getElementById('themeToggle');
+  if(tgl){
+    tgl.addEventListener('click', function(){
+      var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if(isLight){ document.documentElement.removeAttribute('data-theme'); }
+      else{ document.documentElement.setAttribute('data-theme','light'); }
+      try{ localStorage.setItem('8c-theme', isLight ? 'dark' : 'light'); }catch(e){}
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.setAttribute('content', isLight ? '#0B0E14' : '#EDF1F7');
+    });
+  }
 
   /* --- scroll-triggered reveal --- */
   var io = new IntersectionObserver(function(entries){
